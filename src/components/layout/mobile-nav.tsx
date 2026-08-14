@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MenuIcon } from "lucide-react";
+import { GraduationCap, MenuIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -26,8 +26,11 @@ export function MobileNav() {
         }
       />
       <SheetContent side="left" className="w-3/4 max-w-xs p-0">
-        <SheetHeader className="border-b">
-          <SheetTitle>Ta&apos;lim Markazi</SheetTitle>
+        <SheetHeader className="flex-row items-center gap-2.5 border-b">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <GraduationCap className="size-4" />
+          </div>
+          <SheetTitle>IML O&apos;quv markazi</SheetTitle>
         </SheetHeader>
         <NavLinks onNavigate={() => setOpen(false)} />
       </SheetContent>

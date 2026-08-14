@@ -2,12 +2,21 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
+import {
+  AlertCircle,
+  ClockIcon,
+  PlusIcon,
+  SearchIcon,
+  UserCheckIcon,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +43,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/shared/empty-state";
+import { PageHero } from "@/components/shared/page-hero";
+import { Pagination } from "@/components/shared/pagination";
+import { StatCard } from "@/components/shared/stat-card";
 import { branchesService } from "@/services/branches.service";
 import { studentsService } from "@/services/students.service";
 import type { CreateStudentDto } from "@/types/student";
@@ -47,19 +60,49 @@ const studentSchema = z.object({
 
 type StudentFormValues = z.infer<typeof studentSchema>;
 
+const STATUS_FILTERS = [
+  { value: "ALL", label: "Barcha statuslar" },
+  { value: "ACTIVE", label: "Faol" },
+  { value: "TRIAL", label: "Sinov muddatida" },
+  { value: "PAUSED", label: "Vaqtincha to'xtatilgan" },
+  { value: "DEBTOR", label: "Qarzdor" },
+  { value: "GRADUATED", label: "Bitirgan" },
+  { value: "LEFT", label: "Ketgan" },
+  { value: "BLOCKED", label: "Bloklangan" },
+];
+
 export default function StudentsPage() {
   const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
   const queryClient = useQueryClient();
 
   const studentsQuery = useQuery({
-    queryKey: ["students"],
-    queryFn: () => studentsService.list({ limit: 50 }),
+    queryKey: ["students", page, search],
+    queryFn: () => studentsService.list({ page, limit: 10, search: search || undefined }),
   });
 
   const branchesQuery = useQuery({
     queryKey: ["branches"],
     queryFn: () => branchesService.list(),
   });
+
+  const rows = useMemo(() => {
+    const data = studentsQuery.data?.data ?? [];
+    return statusFilter === "ALL"
+      ? data
+      : data.filter((s) => s.status === statusFilter);
+  }, [studentsQuery.data, statusFilter]);
+
+  const stats = useMemo(() => {
+    const data = studentsQuery.data?.data ?? [];
+    return {
+      active: data.filter((s) => s.status === "ACTIVE").length,
+      trial: data.filter((s) => s.status === "TRIAL").length,
+      debtor: data.filter((s) => s.status === "DEBTOR").length,
+    };
+  }, [studentsQuery.data]);
 
   const {
     register,
@@ -101,75 +144,120 @@ export default function StudentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">O&apos;quvchilar</h1>
-          <p className="text-sm text-muted-foreground">
-            Jami {studentsQuery.data?.meta.total ?? 0} ta o&apos;quvchi
-          </p>
-        </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger render={<Button>O&apos;quvchi qo&apos;shish</Button>} />
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Yangi o&apos;quvchi</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">F.I.Sh</Label>
-                <Input id="fullName" {...register("fullName")} />
-                {errors.fullName && (
-                  <p className="text-sm text-destructive">
-                    {errors.fullName.message}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Telefon</Label>
-                <Input id="phone" placeholder="+998901234567" {...register("phone")} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="parentPhone">Ota-ona telefoni</Label>
-                <Input id="parentPhone" placeholder="+998901234567" {...register("parentPhone")} />
-              </div>
-              <div className="space-y-2">
-                <Label>Filial</Label>
-                <Select
-                  value={watch("branchId")}
-                  onValueChange={(value) => setValue("branchId", value ?? "")}
-                  items={branchesQuery.data?.map((branch) => ({
-                    value: branch.id,
-                    label: branch.name,
-                  }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Filialni tanlang" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {branchesQuery.data?.map((branch) => (
-                      <SelectItem key={branch.id} value={branch.id}>
-                        {branch.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.branchId && (
-                  <p className="text-sm text-destructive">
-                    {errors.branchId.message}
-                  </p>
-                )}
-              </div>
-              <DialogFooter>
-                <Button type="submit" disabled={isSubmitting}>
-                  Saqlash
+      <PageHero
+        title="O'quvchilar"
+        subtitle={`Jami ${studentsQuery.data?.meta.total ?? 0} ta o'quvchi`}
+        action={
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger
+              render={
+                <Button className="bg-white text-primary hover:bg-white/90">
+                  <PlusIcon />
+                  O&apos;quvchi qo&apos;shish
                 </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+              }
+            />
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Yangi o&apos;quvchi</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">F.I.Sh</Label>
+                  <Input id="fullName" {...register("fullName")} />
+                  {errors.fullName && (
+                    <p className="text-sm text-destructive">
+                      {errors.fullName.message}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Telefon</Label>
+                  <Input id="phone" placeholder="+998901234567" {...register("phone")} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="parentPhone">Ota-ona telefoni</Label>
+                  <Input id="parentPhone" placeholder="+998901234567" {...register("parentPhone")} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Filial</Label>
+                  <Select
+                    value={watch("branchId")}
+                    onValueChange={(value) => setValue("branchId", value ?? "")}
+                    items={branchesQuery.data?.map((branch) => ({
+                      value: branch.id,
+                      label: branch.name,
+                    }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Filialni tanlang" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {branchesQuery.data?.map((branch) => (
+                        <SelectItem key={branch.id} value={branch.id}>
+                          {branch.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.branchId && (
+                    <p className="text-sm text-destructive">
+                      {errors.branchId.message}
+                    </p>
+                  )}
+                </div>
+                <DialogFooter>
+                  <Button type="submit" disabled={isSubmitting}>
+                    Saqlash
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        }
+      />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard icon={Users} label="Jami o'quvchilar" value={studentsQuery.data?.meta.total ?? 0} color="violet" />
+        <StatCard icon={UserCheckIcon} label="Faol o'quvchilar" value={stats.active} color="green" />
+        <StatCard icon={ClockIcon} label="Sinov muddatida" value={stats.trial} color="orange" />
+        <StatCard icon={AlertCircle} label="Qarzdorlar" value={stats.debtor} color="blue" />
       </div>
 
-      <div className="rounded-md border bg-background">
+      <Card>
+        <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative sm:w-72">
+            <SearchIcon className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Qidirish..."
+              className="pl-8"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+            />
+          </div>
+          <Select
+            value={statusFilter}
+            onValueChange={(value) => setStatusFilter(value ?? "ALL")}
+            items={STATUS_FILTERS}
+          >
+            <SelectTrigger className="sm:w-56">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_FILTERS.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </CardContent>
+      </Card>
+
+      <Card className="overflow-hidden py-0">
         <Table>
           <TableHeader>
             <TableRow>
@@ -187,14 +275,18 @@ export default function StudentsPage() {
                 </TableCell>
               </TableRow>
             )}
-            {studentsQuery.data?.data.length === 0 && (
+            {!studentsQuery.isLoading && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground">
-                  Hozircha o&apos;quvchilar yo&apos;q
+                <TableCell colSpan={4}>
+                  <EmptyState
+                    icon={Users}
+                    title="Hozircha o'quvchilar yo'q"
+                    subtitle="Birinchi o'quvchini qo'shib boshlang"
+                  />
                 </TableCell>
               </TableRow>
             )}
-            {studentsQuery.data?.data.map((student) => (
+            {rows.map((student) => (
               <TableRow key={student.id}>
                 <TableCell className="font-mono text-xs">
                   {student.studentCode}
@@ -208,7 +300,16 @@ export default function StudentsPage() {
             ))}
           </TableBody>
         </Table>
-      </div>
+        {studentsQuery.data && studentsQuery.data.meta.totalPages > 1 && (
+          <Pagination
+            page={page}
+            totalPages={studentsQuery.data.meta.totalPages}
+            total={studentsQuery.data.meta.total}
+            itemLabel="o'quvchi"
+            onPageChange={setPage}
+          />
+        )}
+      </Card>
     </div>
   );
 }

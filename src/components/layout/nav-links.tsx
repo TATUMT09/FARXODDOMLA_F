@@ -15,15 +15,19 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           item.href === "/dashboard"
             ? pathname === "/dashboard"
             : pathname.startsWith(item.href);
+        const Icon = item.icon;
 
         if (!item.enabled) {
           return (
             <div
               key={item.href}
-              className="flex items-center justify-between rounded-md px-3 py-2 text-sm text-muted-foreground/50"
+              className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground/50"
               title="Tez orada"
             >
-              <span>{item.label}</span>
+              <span className="flex items-center gap-2.5">
+                <Icon className="size-4" />
+                {item.label}
+              </span>
               <span className="text-xs">tez orada</span>
             </div>
           );
@@ -35,12 +39,13 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             href={item.href}
             onClick={onNavigate}
             className={cn(
-              "block rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+              "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
               isActive
-                ? "bg-accent text-accent-foreground"
+                ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
                 : "text-muted-foreground",
             )}
           >
+            <Icon className="size-4 shrink-0" />
             {item.label}
           </Link>
         );
