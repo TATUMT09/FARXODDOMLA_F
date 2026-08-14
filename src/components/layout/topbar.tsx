@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/providers/auth-provider";
+import { MobileNav } from "./mobile-nav";
 
 function initials(name: string) {
   return name
@@ -25,8 +26,8 @@ export function Topbar() {
   const { user, logout } = useAuth();
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-background px-6">
-      <div />
+    <header className="flex h-16 items-center justify-between border-b bg-background px-4 md:px-6">
+      <MobileNav />
       {user && (
         <DropdownMenu>
           <DropdownMenuTrigger
