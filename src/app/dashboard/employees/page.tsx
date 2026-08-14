@@ -66,6 +66,17 @@ const STATUS_FILTERS = [
   { value: "INACTIVE", label: "Nofaol" },
 ];
 
+const POSITION_OPTIONS = [
+  { value: "Administrator", label: "Administrator" },
+  { value: "Qabulxona xodimi", label: "Qabulxona xodimi (Reception)" },
+  { value: "Kassir", label: "Kassir" },
+  { value: "Menejer", label: "Menejer" },
+  { value: "Buxgalter", label: "Buxgalter" },
+  { value: "HR mutaxassisi", label: "HR mutaxassisi" },
+  { value: "Xavfsizlik xodimi", label: "Xavfsizlik xodimi" },
+  { value: "Farrosh", label: "Farrosh" },
+];
+
 export default function EmployeesPage() {
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
@@ -172,8 +183,23 @@ export default function EmployeesPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="position">Lavozimi</Label>
-                  <Input id="position" placeholder="RECEPTIONIST" {...register("position")} />
+                  <Label>Lavozimi</Label>
+                  <Select
+                    value={watch("position")}
+                    onValueChange={(value) => setValue("position", value ?? "")}
+                    items={POSITION_OPTIONS}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Lavozimni tanlang" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {POSITION_OPTIONS.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   {errors.position && (
                     <p className="text-sm text-destructive">{errors.position.message}</p>
                   )}
