@@ -40,7 +40,7 @@ export default function DashboardLayout({
             alt=""
             aria-hidden
             fill
-            className="pointer-events-none absolute inset-0 object-contain opacity-[0.04] select-none"
+            className="pointer-events-none absolute inset-0 object-contain opacity-15 select-none"
           />
           <div className="relative">{children}</div>
         </main>
