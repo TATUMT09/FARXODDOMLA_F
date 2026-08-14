@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -11,7 +12,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,8 +49,15 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
       <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Ta&apos;lim Markazi ERP</CardTitle>
+        <CardHeader className="items-center text-center">
+          <Image
+            src="/logo.png"
+            alt="IML Intensive Math Logic o'quv markazi"
+            width={1720}
+            height={914}
+            priority
+            className="w-full max-w-64 rounded-lg"
+          />
           <CardDescription>Tizimga kirish uchun ma&apos;lumotlaringizni kiriting</CardDescription>
         </CardHeader>
         <CardContent>
