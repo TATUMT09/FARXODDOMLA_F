@@ -47,17 +47,20 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
-      <Card className="w-full max-w-sm">
+    <div className="relative flex min-h-screen items-center justify-center bg-[url('/kirishfon.webp')] bg-cover bg-center px-4">
+      <div className="absolute inset-0 bg-black/10" />
+      <Card className="relative w-full max-w-sm">
         <CardHeader className="items-center text-center">
-          <Image
-            src="/logo.png"
-            alt="IML Intensive Math Logic o'quv markazi"
-            width={1720}
-            height={914}
-            priority
-            className="w-full max-w-64 rounded-lg"
-          />
+          <div className="w-full max-w-64 rounded-lg bg-black p-3">
+            <Image
+              src="/logo.png"
+              alt="IML Intensive Math Logic o'quv markazi"
+              width={1720}
+              height={914}
+              priority
+              className="w-full rounded-md"
+            />
+          </div>
           <CardDescription>Tizimga kirish uchun ma&apos;lumotlaringizni kiriting</CardDescription>
         </CardHeader>
         <CardContent>
