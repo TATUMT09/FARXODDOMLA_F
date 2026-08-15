@@ -51,7 +51,7 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-black/10" />
       <Card className="relative w-full max-w-sm">
         <CardHeader className="items-center text-center">
-          <div className="w-full max-w-64 rounded-lg bg-black p-3">
+          <div className="mx-auto w-full max-w-64 rounded-lg bg-black p-3">
             <Image
               src="/logo.png"
               alt="IML Intensive Math Logic o'quv markazi"
