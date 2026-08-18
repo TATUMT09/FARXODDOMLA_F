@@ -6,6 +6,7 @@ export interface AuthUser {
   role: string;
   branchId: string | null;
   status: "ACTIVE" | "INACTIVE";
+  permissions: string[];
 }
 
 export interface LoginResponse {
