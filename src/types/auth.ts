@@ -13,3 +13,10 @@ export interface LoginResponse {
   accessToken: string;
   user: AuthUser;
 }
+
+export interface AuthSession {
+  id: string;
+  createdAt: string;
+  expiresAt: string;
+  revokedAt: string | null;
+}
