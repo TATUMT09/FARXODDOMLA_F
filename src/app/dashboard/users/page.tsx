@@ -55,6 +55,7 @@ const userSchema = z.object({
   fullName: z.string().min(2, "F.I.Sh kiriting"),
   phone: z.string().min(5, "Telefon kiriting"),
   login: z.string().optional().or(z.literal("")),
+  email: z.string().email("To'g'ri email kiriting").optional().or(z.literal("")),
   password: z.string().min(6, "Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
   roleId: z.string().min(1, "Rolni tanlang"),
 });
@@ -111,7 +112,7 @@ export default function UsersPage() {
     formState: { errors, isSubmitting },
   } = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
-    defaultValues: { fullName: "", phone: "", login: "", password: "", roleId: "" },
+    defaultValues: { fullName: "", phone: "", login: "", email: "", password: "", roleId: "" },
   });
 
   const createMutation = useMutation({
@@ -136,6 +137,7 @@ export default function UsersPage() {
       fullName: values.fullName,
       phone: values.phone,
       login: values.login || undefined,
+      email: values.email || undefined,
       password: values.password,
       roleId: values.roleId,
     });
@@ -178,6 +180,13 @@ export default function UsersPage() {
                 <div className="space-y-2">
                   <Label htmlFor="login">Login (ixtiyoriy)</Label>
                   <Input id="login" {...register("login")} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email (ixtiyoriy, parolni tiklash uchun)</Label>
+                  <Input id="email" type="email" placeholder="email@example.com" {...register("email")} />
+                  {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email.message}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Parol</Label>
@@ -269,6 +278,7 @@ export default function UsersPage() {
               <TableHead>F.I.Sh</TableHead>
               <TableHead>Telefon</TableHead>
               <TableHead>Login</TableHead>
+              <TableHead>Email</TableHead>
               <TableHead>Rol</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
@@ -276,14 +286,14 @@ export default function UsersPage() {
           <TableBody>
             {usersQuery.isLoading && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
                   Yuklanmoqda...
                 </TableCell>
               </TableRow>
             )}
             {!usersQuery.isLoading && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5}>
+                <TableCell colSpan={6}>
                   <EmptyState
                     icon={UserCog}
                     title="Hozircha foydalanuvchilar yo'q"
@@ -297,6 +307,7 @@ export default function UsersPage() {
                 <TableCell>{user.fullName}</TableCell>
                 <TableCell>{user.phone}</TableCell>
                 <TableCell>{user.login ?? "—"}</TableCell>
+                <TableCell>{user.email ?? "—"}</TableCell>
                 <TableCell>{user.role?.name ?? "—"}</TableCell>
                 <TableCell>
                   <Badge variant="secondary">{user.status}</Badge>

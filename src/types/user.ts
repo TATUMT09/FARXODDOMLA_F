@@ -3,6 +3,7 @@ export interface SystemUser {
   fullName: string;
   phone: string;
   login: string | null;
+  email: string | null;
   roleId: string;
   branchId: string | null;
   status: "ACTIVE" | "INACTIVE";
@@ -13,6 +14,7 @@ export interface CreateSystemUserDto {
   fullName: string;
   phone: string;
   login?: string;
+  email?: string;
   password: string;
   roleId: string;
   branchId?: string;

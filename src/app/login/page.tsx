@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -80,7 +81,15 @@ export default function LoginPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Parol</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Parol</Label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-primary hover:underline"
+                >
+                  Parolni unutdingizmi?
+                </Link>
+              </div>
               <Input
                 id="password"
                 type="password"
