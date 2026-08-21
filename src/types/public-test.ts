@@ -4,6 +4,8 @@ export interface PublicTestSummary {
   id: string;
   title: string;
   description: string | null;
+  subject: string | null;
+  level: string | null;
   durationMinutes: number;
   questionCount: number;
 }

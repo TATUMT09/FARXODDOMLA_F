@@ -3,12 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
-import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { PencilIcon, PlusIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -57,6 +57,7 @@ export default function TestDetailPage() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const testQuery = useQuery({
     queryKey: ["admin-test", params.id],
@@ -136,6 +137,27 @@ export default function TestDetailPage() {
     },
   });
 
+  const importMutation = useMutation({
+    mutationFn: (file: File) => testsService.importQuestions(params.id, file),
+    onSuccess: (result) => {
+      if (result.imported > 0) {
+        toast.success(`${result.imported} ta savol import qilindi`);
+      }
+      result.warnings.forEach((warning) => toast.warning(warning));
+      if (result.imported === 0 && result.warnings.length === 0) {
+        toast.error("Fayldan birorta ham savol topilmadi");
+      }
+      queryClient.invalidateQueries({ queryKey: ["admin-test", params.id] });
+    },
+    onError: (error) => {
+      const message =
+        error instanceof AxiosError
+          ? (error.response?.data as { message?: string })?.message
+          : undefined;
+      toast.error(message ?? "Faylni import qilishda xatolik yuz berdi");
+    },
+  });
+
   const toggleStatusMutation = useMutation({
     mutationFn: () =>
       testsService.update(params.id, {
@@ -175,6 +197,26 @@ export default function TestDetailPage() {
                 onClick={() => toggleStatusMutation.mutate()}
               >
                 {test.status === "PUBLISHED" ? "Qoralamaga o'tkazish" : "E'lon qilish"}
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".docx"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) importMutation.mutate(file);
+                  e.target.value = "";
+                }}
+              />
+              <Button
+                variant="outline"
+                className="bg-white text-primary hover:bg-white/90"
+                disabled={importMutation.isPending}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <UploadIcon />
+                {importMutation.isPending ? "Yuklanmoqda..." : "Word fayldan yuklash"}
               </Button>
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger
@@ -253,6 +295,25 @@ export default function TestDetailPage() {
           )
         }
       />
+
+      <Card className="bg-muted/40">
+        <CardContent className="text-sm text-muted-foreground">
+          <p className="font-medium text-foreground">Word fayl formati:</p>
+          <p>
+            Har bir savol: 1-qatorda savol matni, keyingi 4 qatorda variantlar,
+            savollar orasida bo&apos;sh qator. To&apos;g&apos;ri javob oldiga{" "}
+            <code className="rounded bg-background px-1 py-0.5 font-mono text-foreground">$</code>{" "}
+            belgisini qo&apos;ying.
+          </p>
+          <pre className="mt-2 rounded-lg bg-background p-2 font-mono text-xs whitespace-pre-wrap">
+{`2 + 2 = ?
+3
+$4
+5
+6`}
+          </pre>
+        </CardContent>
+      </Card>
 
       {testQuery.isLoading && (
         <p className="text-center text-muted-foreground">Yuklanmoqda...</p>

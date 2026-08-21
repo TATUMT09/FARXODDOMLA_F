@@ -5,6 +5,8 @@ export interface Test {
   id: string;
   title: string;
   description: string | null;
+  subject: string | null;
+  level: string | null;
   durationMinutes: number;
   status: TestStatus;
   createdById: string;
@@ -32,6 +34,8 @@ export interface TestWithQuestions extends Test {
 export interface CreateTestDto {
   title: string;
   description?: string;
+  subject?: string;
+  level?: string;
   durationMinutes: number;
   status?: TestStatus;
 }

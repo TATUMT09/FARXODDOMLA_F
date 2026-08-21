@@ -28,6 +28,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -40,12 +47,18 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { PageHero } from "@/components/shared/page-hero";
 import { Pagination } from "@/components/shared/pagination";
 import { StatCard } from "@/components/shared/stat-card";
+import { TEST_LEVELS, TEST_SUBJECTS } from "@/lib/test-taxonomy";
 import { testsService } from "@/services/tests.service";
 import type { CreateTestDto } from "@/types/test";
+
+const SUBJECT_ITEMS = TEST_SUBJECTS.map((s) => ({ value: s, label: s }));
+const LEVEL_ITEMS = TEST_LEVELS.map((l) => ({ value: l, label: l }));
 
 const testSchema = z.object({
   title: z.string().min(2, "Test nomini kiriting"),
   description: z.string().optional().or(z.literal("")),
+  subject: z.string().optional().or(z.literal("")),
+  level: z.string().optional().or(z.literal("")),
   durationMinutes: z.string().min(1, "Davomiylikni kiriting"),
 });
 
@@ -76,10 +89,18 @@ export default function TestsAdminPage() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<TestFormValues>({
     resolver: zodResolver(testSchema),
-    defaultValues: { title: "", description: "", durationMinutes: "" },
+    defaultValues: {
+      title: "",
+      description: "",
+      subject: "",
+      level: "",
+      durationMinutes: "",
+    },
   });
 
   const createMutation = useMutation({
@@ -103,6 +124,8 @@ export default function TestsAdminPage() {
     createMutation.mutate({
       title: values.title,
       description: values.description || undefined,
+      subject: values.subject || undefined,
+      level: values.level || undefined,
       durationMinutes: Number(values.durationMinutes),
     });
   };
@@ -137,6 +160,46 @@ export default function TestsAdminPage() {
                 <div className="space-y-2">
                   <Label htmlFor="description">Tavsif (ixtiyoriy)</Label>
                   <Input id="description" {...register("description")} />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label>Fan</Label>
+                    <Select
+                      value={watch("subject")}
+                      onValueChange={(value) => setValue("subject", value ?? "")}
+                      items={SUBJECT_ITEMS}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Fanni tanlang" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SUBJECT_ITEMS.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Daraja</Label>
+                    <Select
+                      value={watch("level")}
+                      onValueChange={(value) => setValue("level", value ?? "")}
+                      items={LEVEL_ITEMS}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Darajani tanlang" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LEVEL_ITEMS.map((item) => (
+                          <SelectItem key={item.value} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="durationMinutes">Davomiyligi (daqiqa)</Label>
@@ -191,6 +254,8 @@ export default function TestsAdminPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Nomi</TableHead>
+              <TableHead>Fan</TableHead>
+              <TableHead>Daraja</TableHead>
               <TableHead>Davomiyligi</TableHead>
               <TableHead>Savollar</TableHead>
               <TableHead>Status</TableHead>
@@ -199,14 +264,14 @@ export default function TestsAdminPage() {
           <TableBody>
             {testsQuery.isLoading && (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
                   Yuklanmoqda...
                 </TableCell>
               </TableRow>
             )}
             {!testsQuery.isLoading && (testsQuery.data?.data.length ?? 0) === 0 && (
               <TableRow>
-                <TableCell colSpan={4}>
+                <TableCell colSpan={6}>
                   <EmptyState
                     icon={ClipboardListIcon}
                     title="Hozircha testlar yo'q"
@@ -225,6 +290,8 @@ export default function TestsAdminPage() {
                     {test.title}
                   </Link>
                 </TableCell>
+                <TableCell>{test.subject ?? "—"}</TableCell>
+                <TableCell>{test.level ?? "—"}</TableCell>
                 <TableCell>{test.durationMinutes} daqiqa</TableCell>
                 <TableCell>{test._count?.questions ?? 0}</TableCell>
                 <TableCell>

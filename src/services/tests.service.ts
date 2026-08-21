@@ -37,4 +37,14 @@ export const testsService = {
   removeQuestion: async (testId: string, questionId: string) => {
     await apiClient.delete(`/tests/${testId}/questions/${questionId}`);
   },
+  importQuestions: async (testId: string, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await apiClient.post<{ imported: number; warnings: string[] }>(
+      `/tests/${testId}/questions/import`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return res.data;
+  },
 };

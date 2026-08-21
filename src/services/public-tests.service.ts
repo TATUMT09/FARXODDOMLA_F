@@ -10,8 +10,10 @@ import type {
 } from "@/types/public-test";
 
 export const publicTestsService = {
-  list: async () => {
-    const res = await publicApiClient.get<PublicTestSummary[]>("/tests");
+  list: async (params: { subject?: string; level?: string } = {}) => {
+    const res = await publicApiClient.get<PublicTestSummary[]>("/tests", {
+      params,
+    });
     return res.data;
   },
   start: async (testId: string) => {
