@@ -37,12 +37,12 @@ export default function AttemptResultPage() {
 
         {attempt && (
           <>
-            <div className="rounded-2xl bg-gradient-to-r from-primary via-primary to-fuchsia-600 px-6 py-8 text-center text-primary-foreground shadow-sm">
+            <div className="rounded-2xl bg-orange-500 px-6 py-8 text-center text-white shadow-sm">
               <h1 className="text-lg font-semibold">{attempt.test.title}</h1>
               <p className="mt-2 text-4xl font-bold">
                 {attempt.correctCount} / {attempt.totalQuestions}
               </p>
-              <p className="mt-1 text-primary-foreground/80">to&apos;g&apos;ri javob</p>
+              <p className="mt-1 text-white/80">to&apos;g&apos;ri javob</p>
             </div>
 
             {attempt.answers.map((answer, index) => (
@@ -85,8 +85,17 @@ export default function AttemptResultPage() {
             ))}
 
             <div className="flex gap-3">
-              <Button variant="outline" className="flex-1" render={<Link href="/tests">Testlar ro&apos;yxati</Link>} nativeButton={false} />
-              <Button className="flex-1" render={<Link href="/tests/profile">Statistikam</Link>} nativeButton={false} />
+              <Button
+                variant="outline"
+                className="flex-1 rounded-full"
+                render={<Link href="/tests">Testlar ro&apos;yxati</Link>}
+                nativeButton={false}
+              />
+              <Button
+                className="flex-1 rounded-full bg-orange-500 hover:bg-orange-600"
+                render={<Link href="/tests/profile">Statistikam</Link>}
+                nativeButton={false}
+              />
             </div>
           </>
         )}

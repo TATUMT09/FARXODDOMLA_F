@@ -85,12 +85,16 @@ export default function TestsLoginPage() {
             {serverError && (
               <p className="text-sm text-destructive">{serverError}</p>
             )}
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full rounded-full bg-orange-500 hover:bg-orange-600"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Kirilmoqda..." : "Kirish"}
             </Button>
             <p className="text-center text-sm text-muted-foreground">
               Hisobingiz yo&apos;qmi?{" "}
-              <Link href="/tests/register" className="text-primary hover:underline">
+              <Link href="/tests/register" className="text-orange-600 hover:underline">
                 Ro&apos;yxatdan o&apos;tish
               </Link>
             </p>

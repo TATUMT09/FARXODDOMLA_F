@@ -83,7 +83,11 @@ function VerifyEmailForm() {
             {serverError && (
               <p className="text-sm text-destructive">{serverError}</p>
             )}
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full rounded-full bg-orange-500 hover:bg-orange-600"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Tekshirilmoqda..." : "Tasdiqlash"}
             </Button>
           </form>

@@ -67,6 +67,12 @@ export interface AttemptDetail extends AttemptSummary {
   answers: AttemptAnswerDetail[];
 }
 
+export interface PlatformStats {
+  totalTestTakers: number;
+  totalTests: number;
+  totalCertificates: number;
+}
+
 export interface StatsMe {
   testsTaken: number;
   totalQuestionsAnswered: number;

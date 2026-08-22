@@ -2,6 +2,7 @@ import { publicApiClient } from "@/lib/public-api-client";
 import type {
   AttemptDetail,
   AttemptSummary,
+  PlatformStats,
   PublicTestSummary,
   StartTestResponse,
   StatsMe,
@@ -14,6 +15,10 @@ export const publicTestsService = {
     const res = await publicApiClient.get<PublicTestSummary[]>("/tests", {
       params,
     });
+    return res.data;
+  },
+  platformStats: async () => {
+    const res = await publicApiClient.get<PlatformStats>("/platform-stats");
     return res.data;
   },
   start: async (testId: string) => {

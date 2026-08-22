@@ -5,7 +5,6 @@ import Link from "next/link";
 import { CheckCircle2Icon, ClipboardListIcon, PercentIcon, TargetIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
-import { PageHero } from "@/components/shared/page-hero";
 import { StatCard } from "@/components/shared/stat-card";
 import {
   Table,
@@ -30,12 +29,15 @@ export default function TestsProfilePage() {
     <div className="min-h-screen bg-sky-50">
       <TestsNav />
       <div className="mx-auto max-w-4xl space-y-6 p-4 md:p-6">
-        <PageHero title="Mening statistikam" subtitle="Test natijalaringiz va yutuqlaringiz" />
+        <div className="rounded-2xl bg-orange-500 px-6 py-8 text-white shadow-sm">
+          <h1 className="text-2xl font-bold">Mening statistikam</h1>
+          <p className="mt-1 text-white/80">Test natijalaringiz va yutuqlaringiz</p>
+        </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard icon={ClipboardListIcon} label="Topshirilgan testlar" value={stats?.testsTaken ?? 0} color="violet" />
-          <StatCard icon={TargetIcon} label="Yechilgan misollar" value={stats?.totalQuestionsAnswered ?? 0} color="blue" />
-          <StatCard icon={CheckCircle2Icon} label="To'g'ri javoblar" value={stats?.totalCorrect ?? 0} color="green" />
+          <StatCard icon={ClipboardListIcon} label="Topshirilgan testlar" value={stats?.testsTaken ?? 0} color="orange" />
+          <StatCard icon={TargetIcon} label="Yechilgan misollar" value={stats?.totalQuestionsAnswered ?? 0} color="orange" />
+          <StatCard icon={CheckCircle2Icon} label="To'g'ri javoblar" value={stats?.totalCorrect ?? 0} color="orange" />
           <StatCard icon={PercentIcon} label="Aniqlik" value={`${stats?.accuracyPercent ?? 0}%`} color="orange" />
         </div>
 
@@ -75,7 +77,7 @@ export default function TestsProfilePage() {
                   <TableCell>
                     <Link
                       href={`/tests/attempts/${attempt.id}`}
-                      className="text-primary hover:underline"
+                      className="text-orange-600 hover:underline"
                     >
                       {attempt.testTitle}
                     </Link>

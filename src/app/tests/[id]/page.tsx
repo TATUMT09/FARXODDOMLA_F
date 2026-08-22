@@ -120,10 +120,10 @@ export default function TakeTestPage() {
     <div className="min-h-screen bg-sky-50">
       <TestsNav />
       <div className="mx-auto max-w-2xl space-y-4 p-4 md:p-6">
-        <div className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-primary via-primary to-fuchsia-600 px-6 py-4 text-primary-foreground shadow-sm">
+        <div className="flex items-center justify-between rounded-2xl bg-orange-500 px-6 py-4 text-white shadow-sm">
           <div>
             <h1 className="text-lg font-bold">{session.title}</h1>
-            <p className="text-sm text-primary-foreground/80">
+            <p className="text-sm text-white/80">
               {answeredCount} / {session.questions.length} javob berildi
             </p>
           </div>
@@ -152,7 +152,7 @@ export default function TakeTestPage() {
                     className={cn(
                       "flex items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors",
                       selected
-                        ? "border-primary bg-primary/10 text-primary"
+                        ? "border-orange-500 bg-orange-50 text-orange-700"
                         : "border-input hover:bg-muted",
                     )}
                   >
@@ -160,7 +160,7 @@ export default function TakeTestPage() {
                       className={cn(
                         "flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-semibold",
                         selected
-                          ? "border-primary bg-primary text-primary-foreground"
+                          ? "border-orange-500 bg-orange-500 text-white"
                           : "border-input",
                       )}
                     >
@@ -175,7 +175,7 @@ export default function TakeTestPage() {
         ))}
 
         <Button
-          className="w-full"
+          className="w-full rounded-full bg-orange-500 hover:bg-orange-600"
           size="lg"
           disabled={submitting}
           onClick={() => void handleSubmit()}
